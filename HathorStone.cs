@@ -18,8 +18,8 @@ namespace Server.Engines
 		private Mobile m_From;
 		private HathorStone m_Stone;
 		private static string serverwallet = "";
-		private static string passphrase = "teste1234";
-		private static string seedkey = "default";
+		private static string passphrase = "";
+		private static string seedkey = "";
 		private string playerwallet;
 		
 		public static void Initialize() /* roda sempre que o server iniciar */
