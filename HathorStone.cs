@@ -73,17 +73,18 @@ namespace Server.Engines
 			Resizable = false;
 			Disposable = false;
 			AddPage(0);
-			AddBackground(225, 151, 535, 279, 9200);
-			AddLabel(404, 173, 0, @"Ultima Online's Hathor Exchenge");
-			AddLabel(409, 214, 0, @"Your Hathor Wallet");
-			AddLabel(439, 303, 0, @"Gold Amount");
-			AddBackground(244, 243, 499, 54, 3500);
-			AddBackground(444, 328, 87, 54, 3500);
-			AddTextEntry(271, 254, 448, 31, 0, 0, playerwallet);
-			AddTextEntry(468, 345, 37, 24, 0, 1, "1");
-			AddButton(671, 388, 247, 248, 1, GumpButtonType.Reply, 0);
-			AddButton(711, 169, 1604, 248, 0, GumpButtonType.Reply, 0);
-			AddLabel(537, 346, 0, @"x 1000");
+			AddBackground(225, 151, 535, 241, 39925);
+			AddLabel(404, 173, 1503, @"Ultima Online's Hathor Exchenge");
+			AddLabel(409, 214, 5, @"Your Hathor Wallet");
+			AddLabel(439, 303, 2720, @"Gold Amount");
+			AddBackground(244, 243, 499, 44, 3500);
+			AddBackground(444, 333, 87, 41, 3500);
+			AddTextEntry(271, 254, 448, 22, 5, 0, playerwallet);
+			AddTextEntry(468, 345, 37, 19, 2720, 1, "1");
+			AddButton(667, 344, 247, 248, 1, GumpButtonType.Reply, 0);
+			AddButton(706, 174, 40015, 1152, 0, GumpButtonType.Reply, 0);
+			AddLabel(537, 346, 2720, @"x 1000");
+			AddImage(421, 348, 40022);
 		}
 
 		public override void OnResponse(NetState sender, RelayInfo info)
