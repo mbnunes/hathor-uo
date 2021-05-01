@@ -44,15 +44,14 @@ namespace Server.Engines
 			}
 		}
 
-		private static void DoTransactions()
+		private async static void DoTransactions()
 		{
 			while (m_HathorQueue.Count > 0)
 			{
 				HathorTransaction ht = m_HathorQueue.Dequeue();
 
 				if (ht.From == null || ht.Amount <= 0) continue; /* invalid transaction, continue */
-
-				ProcessPayment(ht.From, ht.PlayerWallet, ht.Amount).ConfigureAwait(false);
+				ProcessPayment(ht.From, ht.PlayerWallet, ht.Amount).Wait();
 			}
 		}
 
