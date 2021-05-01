@@ -14,19 +14,53 @@ namespace Server.Engines
 {
 	class HathorStore : Gump
 	{
-		
+
 		private Mobile m_From;
 		private HathorStone m_Stone;
 		private static string serverwallet = "";
 		private static string passphrase = "";
 		private static string seedkey = "";
 		private string playerwallet;
-		
+
+		private static Task m_HathorTask;
+		private static Queue<HathorTransaction> m_HathorQueue;
+
+		struct HathorTransaction
+		{
+			public Mobile From;
+			public string PlayerWallet;
+			public int Amount;
+		}
+
+		private static void NewTransaction(HathorTransaction transact)
+		{
+			m_HathorQueue.Enqueue(transact);
+
+			if (m_HathorTask == null || m_HathorTask.IsCompleted)
+			{
+				m_HathorTask = new Task(DoTransactions);
+				m_HathorTask.ConfigureAwait(false);
+				m_HathorTask.Start();
+			}
+		}
+
+		private static void DoTransactions()
+		{
+			while (m_HathorQueue.Count > 0)
+			{
+				HathorTransaction ht = m_HathorQueue.Dequeue();
+
+				if (ht.From == null || ht.Amount <= 0) continue; /* invalid transaction, continue */
+
+				ProcessPayment(ht.From, ht.PlayerWallet, ht.Amount).ConfigureAwait(false);
+			}
+		}
+
 		public static void Initialize() /* roda sempre que o server iniciar */
 		{
 			StartWallet();
 		}
-		
+
 		public HathorStore(HathorStone stone, Mobile from) : base(30, 30)
 		{
 			m_Stone = stone;
@@ -70,9 +104,9 @@ namespace Server.Engines
 				{
 					message = "Invalid Wallet ID";
 				}
-				else if (!m_From.Backpack.ConsumeTotal(typeof(Gold), gold*1000))
+				else if (!m_From.Backpack.ConsumeTotal(typeof(Gold), gold * 1000))
 				{
-					message = $"You dont have {gold*1000:#,##0} gold coins in your backpack!";
+					message = $"You dont have {gold * 1000:#,##0} gold coins in your backpack!";
 				}
 
 
@@ -89,19 +123,27 @@ namespace Server.Engines
 
 				m_From.LocalOverheadMessage(MessageType.Regular, 0x3b2, true, "Processing your payment...");
 				int units = gold;
-				ProcessPayment(m_From, wallet, units).ConfigureAwait(false);
+
+				HathorTransaction ht = new HathorTransaction()
+				{
+					From = m_From,
+					PlayerWallet = wallet,
+					Amount = units
+				};
+
+				NewTransaction(ht);
 			}
 		}
 
-		public Task ProcessPayment(Mobile from, string playerWallet, int coins)
+		public static Task ProcessPayment(Mobile from, string playerWallet, int coins)
 		{
 			return Task.Run(() =>
-			{				
+			{
 				SendTxToPlayer(from, playerWallet, coins);
 			});
 		}
 
-		public void SendTxToPlayer(Mobile player, string walletPlayer, int units)
+		public static void SendTxToPlayer(Mobile player, string walletPlayer, int units)
 		{
 			try
 			{
@@ -124,21 +166,23 @@ namespace Server.Engines
 				var response = (HttpWebResponse)request.GetResponse();
 
 				var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-				m_From.SendGump(new NoticeGump(1060637, 30720, responseString, 0x00A0EE, 420, 280, null, null));
+				player.SendGump(new NoticeGump(1060637, 30720, responseString, 0x00A0EE, 420, 280, null, null));
 				//string message = $"Congratulations!<br>You have converted {units*1000:#,##0} Gold Coins into {((float)units)/100:#,##0.00} HathorCoin! You can now check your Hathor wallet!";
 				//m_From.SendGump(new NoticeGump(1060637, 30720, message, 0x00A0EE, 420, 280, null, null));
 			}
 			catch
 			{
-				string err = $"Cannot process your request. {units*1000:#,##0} gold coins has been returned to your backpack";
-				m_From.SendGump(new NoticeGump(1060637, 30720, err, 0xFFC000, 420, 280, null, null));
-				m_From.AddToBackpack(new Gold(units * 1000));
+				string err = $"Cannot process your request. {units * 1000:#,##0} gold coins has been returned to your backpack";
+				player.SendGump(new NoticeGump(1060637, 30720, err, 0xFFC000, 420, 280, null, null));
+				player.AddToBackpack(new Gold(units * 1000));
 				return;
 			}
 		}
-		
+
 		public static void StartWallet()
 		{
+			m_HathorQueue = new Queue<HathorTransaction>();
+
 			try
 			{
 				var request = (HttpWebRequest)WebRequest.Create("http://localhost:8000/start");
@@ -160,7 +204,7 @@ namespace Server.Engines
 				var response = (HttpWebResponse)request.GetResponse();
 
 				var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-				
+
 				Console.WriteLine("Carteira Hathor iniciada");
 			}
 			catch
@@ -168,7 +212,7 @@ namespace Server.Engines
 				Console.WriteLine("Erro ao iniciar carteira Hathor");
 			}
 		}
-		
+
 	}
 	class HathorStone : Item
 	{
