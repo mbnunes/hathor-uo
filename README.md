@@ -6,8 +6,8 @@
 </p>
 Hathor-UO is a class that allows Unity to talk directly to your Headless Hathor Wallet, so you can make any kind of transaction
 
-## Unity Version 
- - Unity 2020.3.3f1 (64-bit)
+## ServUO - Version
+ - Serv UO - 57
 
 ## Already implemented transactions
 
@@ -18,45 +18,17 @@ Hathor-UO is a class that allows Unity to talk directly to your Headless Hathor 
 
 ## Installation
 
- 1. Copy the repository to your projecy
- 2. Dragg the prefab "HathorCountFloatingText" to your scene
- 3. Add the HathorPlayer script to your main character 
- 4. In your character, go to the inspector and add the player wallet in the field "Wallet Player"
- 5. In your HathorPlayer.cs add  your o x_wallet_id e passphrase from where the tokens are coming from 
- 6. In your enemies or OnDeath/OnDestroy  functions add the code below:
+ 1. Copy the repository to Scripts/Services folder 
+ 2. Add HathorStone using:
 
-```sh
-//Hathor - Using namespace
-using UnityHathor;
-
-//Hathor - Start Variables Block
-public GameObject hathorCountPopup;
-public GameObject playerObject;
-//Hathor - End Variables Block
 ```
-```sh
-// Inside your death or destroy functions
-// Hathor - Grab the wallet inserted in the character wallet
-var walletPlayer = playerObject.GetComponent<HathorPlayer>().walletPlayer;
-// generate a random value between 0 and 5 where 5 is 0.05 Hathor Coin
-int hathorAmount = UnityEngine.Random.Range(0, 5);
-
-// Hathor - Check if hathorCountPopup is no null
-if (hathorCountPopup)
-{
-    // Hathor - SHows the amount of coind received
-    HathorQueue.ShowHathorCountPopup(hathorCountPopup, hathorAmount, transform);
-}
-
-// Hathor - If the value is below or equal zero, do not attempt to transact
-if (hathorAmount > 0)
-{                
-    // Hathor - Create a new struct with the player wallet and the value to be transacted
-    HathorTransactStruct newTransact = new HathorTransactStruct(walletPlayer, hathorAmount);
-    // Hathor - Add the new struct to the transaction queue
-    HathorQueue.transactsQueue.Enqueue(newTransact);                
-}  
+[add HathorStone
 ```
+
+ 3. Done! exchange 1K gold coins for 1 Hathor
+
+
+
 ## Donations
 
  **Hathor**: HSC2KhChyZfHRLwTAwjc6bqqfebtvsL3xY
