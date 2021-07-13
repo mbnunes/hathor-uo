@@ -31,7 +31,7 @@ Hathor-UO is a class that allows Unity to talk directly to your Headless Hathor 
 
 ## Donations
 
- **Hathor**: HSC2KhChyZfHRLwTAwjc6bqqfebtvsL3xY
+ **Hathor**: HVFPWoQs41uyhbwfDA8qs6nVivf9mZT7Lc
 
 
 ## License
